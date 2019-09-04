@@ -1,7 +1,7 @@
 import logging
 import json
 
-from mt_script_api.exceptions import MutationError
+from majortom_scripting.exceptions import MutationError
 
 logger = logging.getLogger(__name__)
 

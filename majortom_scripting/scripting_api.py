@@ -2,13 +2,13 @@ import requests
 import logging
 import json
 import datetime
-from mt_script_api.mutations import Mutations
-from mt_script_api.exceptions import QueryError, UnknownObjectError, ScriptDisabledError, TokenInvalidError, RateLimitError
+from majortom_scripting.mutations import Mutations
+from majortom_scripting.exceptions import QueryError, UnknownObjectError, ScriptDisabledError, TokenInvalidError, RateLimitError
 
 logger = logging.getLogger(__name__)
 
 
-class ScriptAPI:
+class ScriptingAPI:
     def __init__(self, host, token, scheme="https", port=None, basic_auth_username=None, basic_auth_password=None):
         self.host = host
         self.token = token
