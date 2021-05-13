@@ -1,0 +1,114 @@
+version: 2.1
+orbs:
+  python: circleci/python@1.4.0
+
+jobs: 
+  test-deploy:
+    executor: python/default
+    steps:
+      - add_ssh_keys:
+          # This is the writable deploy key in Github called "Write-Access Key for Publishing and Git Tagging"
+          # The keys are stored in LastPass under CircleCI
+          fingerprints:
+            - "12:3e:11:34:9e:3f:b3:6e:9c:64:f6:5e:1f:d9:80:49"
+      - checkout
+      - python/install-packages:
+          pkg-manager: pip
+          pypi-cache: false
+          args: -r deploy_requirements.txt
+      - python/dist
+      - run:
+          # twine depends on environment variables being defined on the project
+          name: Publish to Test-PyPi
+          command: | 
+            twine upload -u __token__ -p ${TEST_PYPI_TOKEN} --repository testpypi dist/*.tar.gz dist/*.whl
+
+      - run:    
+          name: Tag release
+          command: |
+            set -exo pipefail
+            new_tag="test-release-v$(cat VERSION)"
+            git config --global user.email "ci@kubos.com"
+            git config --global user.name "CircleCI"
+            git tag -m "CI tagging test-release with ${new_tag} on $(date '+%m-%d-%y@%H:%M:%S')" ${new_tag}
+            git push origin ${new_tag}
+            # Immediately delete the tag -- we're just checking that we have access
+            git push --delete origin ${new_tag}
+
+  deploy:
+    executor: python/default
+    steps:
+      - add_ssh_keys:
+          # This is the writable deploy key in Github called "Write-Access Key for Publishing and Git Tagging"
+          # The keys are stored in LastPass under CircleCI
+          fingerprints:
+            - "12:3e:11:34:9e:3f:b3:6e:9c:64:f6:5e:1f:d9:80:49"
+      - checkout
+      - python/install-packages:
+          pkg-manager: pip
+          pypi-cache: false
+          args: -r deploy_requirements.txt
+      - python/dist
+      - run:
+          # twine depends on environment variables being defined on the project
+          name: Publish to PyPi
+          command: | 
+            twine upload -u __token__ -p ${PYPI_TOKEN} dist/*.tar.gz dist/*.whl
+
+      - run:    
+          name: Tag release
+          command: |
+            set -exo pipefail
+            new_tag="v$(cat VERSION)"
+            git config --global user.email "ci@kubos.com"
+            git config --global user.name "CircleCI"
+            git tag -m "CI tagging release with ${new_tag} on $(date '+%m-%d-%y@%H:%M:%S')" ${new_tag}
+            git push origin ${new_tag} 
+
+
+  # Test multiple python version by running multiple jobs
+  orbTest:
+    parameters:
+      tag:
+        description: "python version"
+        default: "3.8"
+        type: string
+    executor:
+      name: python/default
+      tag: <<parameters.tag>>
+    steps: 
+      - checkout
+      - python/install-packages:
+          pkg-manager: pip
+          pypi-cache: false
+          args: -r test_requirements.txt
+      - run:
+          command: |
+            pytest
+          name: Test it
+  
+workflows:
+  version: 2
+  test-and-maybe-deploy:
+    jobs:
+    - orbTest:
+        matrix:
+          parameters:
+            tag: ["3.6", "3.7", "3.8", "3.9"]   
+
+    - test-deploy:
+        filters:
+          branches:
+            only: 
+              - test-release
+              - release
+        requires:
+          - toxTest
+          - orbTest
+    
+    - deploy:
+        filters:
+          branches:
+            only: release
+        requires:
+          - test-deploy
