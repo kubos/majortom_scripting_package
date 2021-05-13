@@ -103,7 +103,6 @@ workflows:
               - test-release
               - release
         requires:
-          - toxTest
           - orbTest
     
     - deploy:
