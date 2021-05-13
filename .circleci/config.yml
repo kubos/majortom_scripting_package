@@ -10,7 +10,7 @@ jobs:
           # This is the writable deploy key in Github called "Write-Access Key for Publishing and Git Tagging"
           # The keys are stored in LastPass under CircleCI
           fingerprints:
-            - "12:3e:11:34:9e:3f:b3:6e:9c:64:f6:5e:1f:d9:80:49"
+            - "72:33:83:cc:3a:45:7b:21:f5:81:36:40:32:d4:25:f9"
       - checkout
       - python/install-packages:
           pkg-manager: pip
