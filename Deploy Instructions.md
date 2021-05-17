@@ -13,3 +13,8 @@ git push origin master:release
 ```
 
 CI should take it from there...
+
+
+### Testing Deploy
+
+During development, you can use a trailing version number, such as `0.1.1devXXX`. Push to the `test-release` branch to publish to a test PyPi. 
