@@ -1,0 +1,219 @@
+[
+  {
+    "starred": false,
+    "tags": [
+      "testing",
+      "operations"
+    ],
+    "id": "58",
+    "fields": "[\n\n]",
+    "displayName": "1. Ping",
+    "description": "A simple ping. The Gateway should pretend to contact the satellite and return a pong.",
+    "commandType": "ping"
+  },
+  {
+    "starred": false,
+    "tags": [
+      "testing",
+      "operations"
+    ],
+    "id": "59",
+    "fields": "[\n\n]",
+    "displayName": "2. Show All Transitions",
+    "description": "This command will go through all of the possible command states. Watch the Communications panel on the dashboard to see the changes.",
+    "commandType": "all_transitions"
+  },
+  {
+    "starred": false,
+    "tags": [
+      "testing",
+      "operations"
+    ],
+    "id": "60",
+    "fields": "[\n\n]",
+    "displayName": "3. Leaf Network Ping",
+    "description": "Commands the Gateway to send a ping through the Leaf Groundstation Network. If credentials are properly configured for the Leaf sandbox, it will echo back.",
+    "commandType": "ping_through_leaf_network"
+  },
+  {
+    "starred": false,
+    "tags": [
+      "operations",
+      "testing"
+    ],
+    "id": "61",
+    "fields": "[\n  {\n    \"name\": \"mode\",\n    \"type\": \"string\",\n    \"range\": [\n      \"NOMINAL\",\n      \"ERROR\"\n    ]\n  },\n  {\n    \"name\": \"duration\",\n    \"type\": \"integer\",\n    \"default\": 300\n  }\n]",
+    "displayName": "4. Start Telemetry Beacon",
+    "description": "Commands the spacecraft to beacon Health and Status Telemetry. After executing this command, you can see the telemetry by navigating to the Analytics Page",
+    "commandType": "telemetry"
+  },
+  {
+    "starred": false,
+    "tags": [
+      "testing"
+    ],
+    "id": "62",
+    "fields": "[\n\n]",
+    "displayName": "5. Error Command",
+    "description": "Always errors to show the error process.",
+    "commandType": "error"
+  },
+  {
+    "starred": false,
+    "tags": [
+      "files",
+      "operations"
+    ],
+    "id": "63",
+    "fields": "[\n\n]",
+    "displayName": "6. Update File List",
+    "description": "Gets the latest list of downloadable files from the spacecraft.",
+    "commandType": "update_file_list"
+  },
+  {
+    "starred": false,
+    "tags": [
+      "files"
+    ],
+    "id": "64",
+    "fields": "[\n  {\n    \"name\": \"gateway_download_path\",\n    \"type\": \n\"string\"\n  }\n]",
+    "displayName": "Uplink File",
+    "description": "Uplink a file from your computer to the spacecraft.",
+    "commandType": "uplink_file"
+  },
+  {
+    "starred": false,
+    "tags": [
+      "files"
+    ],
+    "id": "65",
+    "fields": "[\n  {\n    \"name\": \"filename\",\n    \"type\": \"string\"\n  }\n]",
+    "displayName": "Downlink File",
+    "description": "Downlink an image from the Spacecraft.",
+    "commandType": "downlink_file"
+  },
+  {
+    "starred": false,
+    "tags": [
+      "operations"
+    ],
+    "id": "66",
+    "fields": "[\n\n]",
+    "displayName": "Establish RF Lock",
+    "description": "Points antennas and starts broadcasting carrier signal to establish RF lock with the spacecraft.",
+    "commandType": "connect"
+  },
+  {
+    "starred": false,
+    "tags": [
+      "operations",
+      "testing"
+    ],
+    "id": "67",
+    "fields": "[\n\n]",
+    "displayName": "Safemode Command",
+    "description": "Commands the spacecraft into safemode, shutting down all non-essential systems.",
+    "commandType": "safemode"
+  },
+  {
+    "starred": false,
+    "tags": [
+      "operations",
+      "power"
+    ],
+    "id": "68",
+    "fields": "[\n  {\n    \"name\": \"BIT_MASK\",\n    \"type\": \"string\"\n  }\n]",
+    "displayName": "Set power to specified components",
+    "description": "Sets the power on various components.",
+    "commandType": "set_power"
+  },
+  {
+    "starred": false,
+    "tags": [
+      "testing",
+      "booleans"
+    ],
+    "id": "69",
+    "fields": "[\n  {\n    \"enum\": {\n      \"LOW\": 10,\n      \"OFF\": 0,\n      \"HIGH\": 80,\n      \"MEDIUM\": 40\n    },\n    \"name\": \"Enum Setting\",\n    \"type\": \"enum\"\n  },\n  {\n    \"name\": \"time\",\n    \"type\": \"datetime\",\n    \"default\": \"now\"\n  },\n  {\n    \"name\": \"string1\",\n    \"type\": \"string\"\n  },\n  {\n    \"name\": \"constant\",\n    \"type\": \"string\",\n    \"value\": \"constant\"\n  },\n  {\n    \"name\": \"default\",\n    \"type\": \"string\",\n    \"default\": \"default string\"\n  },\n  {\n    \"name\": \"charLimit\",\n    \"type\": \"string\",\n    \"characterLimit\": 10\n \n },\n  {\n    \"name\": \"stringWithRange\",\n    \"type\": \"string\",\n    \"range\": [\n      \"LOW\",\n      \"MEDIUM\",\n      \"EXTREME\"\n    ]\n  },\n  {\n    \"name\": \"integer1\",\n    \"type\": \"integer\"\n  },\n  {\n    \"name\": \"integer2\",\n    \"type\": \"integer\",\n    \"range\": [\n      0,\n      1\n    ]\n  },\n  {\n    \"name\": \"integer3\",\n    \"type\": \"integer\",\n    \"range\": [\n      0,\n      10\n    ]\n  },\n  {\n    \"name\": \"integer4\",\n    \"type\": \"integer\",\n    \"range\": [\n      -100,\n      100\n    ]\n  },\n  {\n    \"name\": \"Long Form Text\",\n    \"type\": \"text\"\n  },\n  {\n    \"name\": \"Boolean\",\n    \"type\": \"boolean\"\n  }\n]",
+    "displayName": "This command has many different fields",
+    "description": "Tests the display of many fields. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim \nad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+    "commandType": "plenty_o_fields"
+  },
+  {
+    "starred": false,
+    "tags": [
+      "booleans"
+    ],
+    "id": "70",
+    "fields": "[\n  {\n    \"name\": \"integer_with_range\",\n    \"type\": \"integer\",\n    \"range\": [\n      0,\n      1\n    ]\n  },\n  {\n    \"name\": \"num_with_range\",\n    \"type\": \"number\",\n    \"range\": [\n      0,\n      1\n    ]\n  }\n]",
+    "displayName": "Range[0,1] as Boolean",
+    "description": "Description to give context to the operator.",
+    "commandType": "boolean_from_integer"
+  },
+  {
+    "starred": false,
+    "tags": [
+      "operations"
+    ],
+    "id": "71",
+    "fields": "[\n  {\n    \"name\": \"mode\",\n    \"type\": \"integer\",\n    \"range\": \n[\n      0,\n      2\n    ]\n  }\n]",
+    "displayName": "Range[0,2] as NOT Boolean",
+    "description": "Description to give context to the operator.",
+    "commandType": "no_boolean"
+  },
+  {
+    "starred": false,
+    "tags": [
+      "operations"
+    ],
+    "id": "72",
+    "fields": "[\n  {\n    \"name\": \"mode\",\n    \"type\": \"integer\",\n    \"range\": [\n      0,\n      100\n    ]\n  }\n]",
+    "displayName": "Many \nnumbers",
+    "description": "Description to give context to the operator.",
+    "commandType": "many_numbers"
+  },
+  {
+    "starred": false,
+    "tags": [
+      "booleans"
+    ],
+    "id": "73",
+    "fields": "[\n  {\n    \"enum\": {\n      \"ENABLE\": 0,\n      \"DISABLE\": 1\n    },\n    \"name\": \"Enum Setting\",\n    \"type\": \"enum\"\n  }\n]",
+    "displayName": "Enum as Boolean",
+    "description": "Enum for boolean.",
+    "commandType": "enums"
+  },
+  {
+    "starred": false,
+    "tags": [
+      "booleans"
+    ],
+    "id": "74",
+    "fields": "[\n  {\n    \"name\": \"no_default_bool\",\n    \"type\": \"boolean\"\n  }\n]",
+    "displayName": "Boolean with no Default",
+    "description": "I value freedom from coercion.",
+    "commandType": "regular_boolean_no_default"
+  },
+  {
+    "starred": false,
+    "tags": [
+      "booleans"
+    ],
+    "id": "75",
+    "fields": "[\n \n {\n    \"name\": \"default_bool\",\n    \"type\": \"boolean\",\n    \"default\": true\n  }\n]",
+    "displayName": "Boolean with Default",
+    "description": "I want my choices made easy.",
+    "commandType": "boolean_true_default"
+  },
+  {
+    "starred": false,
+    "tags": [
+      "booleans"
+    ],
+    "id": "76",
+    "fields": "[\n  {\n    \"name\": \"custom_label_bool\",\n    \"type\": \"boolean\",\n    \"range\": [\n      \"NO GO\",\n      \"GO\"\n    ]\n  }\n]",
+    "displayName": "Boolean with Custom Labels",
+    "description": "I have the best words.",
+    "commandType": "boolean_with_range"
+  }
+]

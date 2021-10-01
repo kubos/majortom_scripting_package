@@ -80,3 +80,28 @@ class UnknownObjectError(ApiError):
         if parent:
             message += f' under parent "{parent}"'
         super().__init__(message)
+
+
+class ModelError(Exception):
+    '''Base error class for Models'''
+
+class NotFoundError(ModelError):
+    '''Base exception for not finding things'''
+
+class MissionNotFoundError(NotFoundError):
+    pass
+
+class CommandNotFoundError(NotFoundError):
+    pass
+
+class PassNotFoundError(NotFoundError):
+    pass
+
+class CommandDefinitionNotFoundError(NotFoundError):
+    pass
+
+class GroundstationNotFoundError(NotFoundError):
+    pass
+
+class SatelliteNotFoundError(NotFoundError):
+    pass
