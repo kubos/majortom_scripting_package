@@ -17,8 +17,13 @@ class ScriptingAPI:
         self.basic_auth_username = basic_auth_username
         self.basic_auth_password = basic_auth_password
         self.mutations = Mutations(self)
-        self.script_info = None
-        self.__fetch_script_info()
+        self.__script_info = None
+
+    @property
+    def script_info(self):
+        if self.__script_info is None:
+            self.__fetch_script_info()
+        return self.__script_info
 
     def script_id(self):
         return self.script_info['id']
@@ -313,7 +318,7 @@ class ScriptingAPI:
         return json_result
 
     def __fetch_script_info(self):
-        self.script_info = self.query("""
+        self.__script_info = self.query("""
             query {
                 agent {
                     type

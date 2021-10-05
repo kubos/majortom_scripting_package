@@ -8,4 +8,6 @@ RUN pip install -r requirements.txt -r test_requirements.txt
 
 COPY . .
 
+ENV PYTHONDONTWRITEBYTECODE=1
+
 CMD [ "pytest" ]

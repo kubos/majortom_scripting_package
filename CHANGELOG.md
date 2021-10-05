@@ -14,5 +14,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Automatic CI/CD process
 - Multi-environment testing 
 
+### Changed
+- ScriptAPI no longer makes a query on initialization. The query for script information (such as the script id) is now lazy and happens when the property is first accessed.
+
+
 [Unreleased]: https://github.com/kubos/majortom_scripting_package/compare/v0.0.2...HEAD
 [0.0.2]: https://github.com/kubos/majortom_scripting_package/releases/tag/v0.0.2

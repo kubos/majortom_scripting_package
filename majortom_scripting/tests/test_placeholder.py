@@ -1,5 +1,3 @@
-import pytest
-from majortom_scripting import ScriptingAPI
 import logging
 
 def test_logging_output():
@@ -10,6 +8,4 @@ def test_logging_output():
     logging.error("ERROR: Testing")
     print("PRINT: Testing")
 
-def test_required_args():
-    with pytest.raises(TypeError):
-        ScriptingAPI()
+
