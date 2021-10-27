@@ -209,3 +209,52 @@ class Mutations:
 
         logger.info(request["notice"])
         return request
+
+    def star_command_definition(self, id, starred):
+        graphql = """
+            mutation UpdateCommandDefinition($id:ID!, $starred:Boolean) {
+                updateCommandDefinition(input: {id:$id, starred:$starred}){
+                    success
+                    notice
+                    errors
+                }
+            }
+        """
+
+        request = self.api.query(graphql,
+                                 variables={
+                                     'id': id,
+                                     'starred': bool(starred),
+                                 },
+                                 path='data.updateCommandDefinition')
+
+        if not request["success"]:
+            raise(MutationError(request=request))
+
+        logger.info(request["notice"])
+        return request
+
+
+    def update_command_definition(self, id, new_definition_json: str):
+        assert isinstance(new_definition_json, str), 'new_definition_json should be a string!'
+        graphql = """
+            mutation UpdateCommandDefinition($id:ID!, $definition:Json) {
+                updateCommandDefinition(input: {id:$id, definition:$definition}){
+                    success
+                    notice
+                    errors
+                }
+            }
+        """
+        request = self.api.query(graphql,
+                                 variables={
+                                     'id': int(id),
+                                     'definition': new_definition_json,
+                                 },
+                                 path='data.updateCommandDefinition')
+
+        if not request["success"]:
+            raise(MutationError(request=request))
+
+        logger.info(request["notice"])
+        return request

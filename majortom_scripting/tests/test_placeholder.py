@@ -4,7 +4,6 @@ import pytest
 from majortom_scripting import ModelingAPI
 import logging
 import random
-import json
 
 @pytest.fixture()
 def modeling_api():
@@ -54,6 +53,31 @@ def test_update_command_definitions(modeling_api):
     retval = sat.update_command_definitions(new_defs)
     assert retval['success'] == True
 
+@pytest.mark.skip(reason="move to example python scripts")
+def test_update_single_command_definition(modeling_api):
+    # Get definitions
+    mission = modeling_api.mission(6)
+    sat = mission.satellite(name="AQUA")
+    defs = sat.command_definitions
+
+    # Descriptions for chosen command to start with a random number
+    cmd_name = "attitude_control"
+    my_cmd = (next(x for x in defs if x.commandType == cmd_name))
+    print(my_cmd)
+    result = my_cmd.update_description(f"{random.randint(0,100)}: {my_cmd.description}")
+    print(result)
+
+@pytest.mark.skip(reason="move to example python scripts")
+def test_star_definitions(modeling_api):
+    # Get definitions
+    mission = modeling_api.mission(6)
+    sat = mission.satellite(name="AQUA")
+    defs = sat.command_definitions
+
+    # Flip all stars
+    for definition in defs:
+        result = definition.update_star(not(definition.starred))
+        print(result)
 
 @pytest.mark.skip(reason="move to example python scripts")
 def test_low_level_api_by_getting_tles_for_systems(scripting_api):
