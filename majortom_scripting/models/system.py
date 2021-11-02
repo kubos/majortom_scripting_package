@@ -59,9 +59,8 @@ class System:
 
   @property
   def command_definitions(self):
-    if self._command_definitions is None:
-      result = self.modeling_api.scripting_api.command_definitions(systemId=self.id)
-      self._command_definitions = [CommandDefinition(self.modeling_api, **x) for x in result]
+    result = self.modeling_api.scripting_api.command_definitions(systemId=self.id)
+    self._command_definitions = [CommandDefinition(self.modeling_api, **x) for x in result]
     return self._command_definitions
     
   def update_command_definitions(self, new_command_defs):
