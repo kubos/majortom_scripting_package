@@ -2,18 +2,21 @@ from datetime import datetime
 from majortom_scripting.scripting_api import ScriptingAPI
 import pytest
 from majortom_scripting import ModelingAPI
+import os
 import logging
 import random
 
+WE_ARE_RUNNING_IN_CI = os.getenv("CIRCLECI", False) == 'true'
+
 @pytest.fixture()
 def modeling_api():
-    token = "3225eff9f1d40bc1eff70bab51c037e63023977a63e549bb1d2210966c6cfafa"
+    token = "9663490bf66bcd4e1acee4f31f5036a71e85a84007611f15e3d1a147574f594b"
     host = "host.docker.internal"
     return ModelingAPI(host=host, token=token, scheme="http", port=3001)
 
 @pytest.fixture()
 def scripting_api():
-    token = "3225eff9f1d40bc1eff70bab51c037e63023977a63e549bb1d2210966c6cfafa"
+    token = "9663490bf66bcd4e1acee4f31f5036a71e85a84007611f15e3d1a147574f594b"
     host = "host.docker.internal"
     return ScriptingAPI(host=host, token=token, scheme="http", port=3001)
 
@@ -34,26 +37,24 @@ def pretty_print_pass(aPass):
     print(f"The pass will start in {delta:.1f} minutes")
     print(aPass)
 
-@pytest.mark.skip(reason="move to example python scripts")
+@pytest.mark.skipif(WE_ARE_RUNNING_IN_CI, reason="No integration tests on CI")
+def test_update_command_definitions(modeling_api):
+    mission = modeling_api.mission(6)
+    sat = mission.satellite(name="AQUA")
+    with open('majortom_scripting/tests/fixtures/command_def.json') as f:
+        new_defs = f.read()
+
+    retval = sat.update_command_definitions(new_defs)
+    assert retval['success'] == True
+
+@pytest.mark.skipif(WE_ARE_RUNNING_IN_CI, reason="No integration tests on CI")
 def test_get_command_defs(modeling_api):
     mission = modeling_api.mission(6)
     sat = mission.satellite(name="AQUA")
     defs = sat.command_definitions
     assert len(defs) >= 1
 
-@pytest.mark.skip(reason="move to example python scripts")
-def test_update_command_definitions(modeling_api):
-    mission = modeling_api.mission(6)
-    sat = mission.satellite(name="AQUA")
-    import os
-    print(os.getcwd())
-    with open('majortom_scripting/tests/command_def.json') as f:
-        new_defs = f.read()
-
-    retval = sat.update_command_definitions(new_defs)
-    assert retval['success'] == True
-
-@pytest.mark.skip(reason="move to example python scripts")
+@pytest.mark.skipif(WE_ARE_RUNNING_IN_CI, reason="No integration tests on CI")
 def test_update_single_command_definition(modeling_api):
     # Get definitions
     mission = modeling_api.mission(6)
@@ -63,11 +64,11 @@ def test_update_single_command_definition(modeling_api):
     # Descriptions for chosen command to start with a random number
     cmd_name = "attitude_control"
     my_cmd = (next(x for x in defs if x.commandType == cmd_name))
-    print(my_cmd)
+    # print(my_cmd)
     result = my_cmd.update_description(f"{random.randint(0,100)}: {my_cmd.description}")
-    print(result)
+    # print(result)
 
-@pytest.mark.skip(reason="move to example python scripts")
+@pytest.mark.skipif(WE_ARE_RUNNING_IN_CI, reason="No integration tests on CI")
 def test_star_definitions(modeling_api):
     # Get definitions
     mission = modeling_api.mission(6)
@@ -77,9 +78,9 @@ def test_star_definitions(modeling_api):
     # Flip all stars
     for definition in defs:
         result = definition.update_star(not(definition.starred))
-        print(result)
+        # print(result)
 
-@pytest.mark.skip(reason="move to example python scripts")
+@pytest.mark.skipif(WE_ARE_RUNNING_IN_CI, reason="No integration tests on CI")
 def test_low_level_api_by_getting_tles_for_systems(scripting_api):
     mission_id = 6
 
@@ -112,7 +113,7 @@ def test_low_level_api_by_getting_tles_for_systems(scripting_api):
     # print(response)
     assert len(response) >= 1
 
-@pytest.mark.skip(reason="move to example python scripts")
+@pytest.mark.skipif(WE_ARE_RUNNING_IN_CI, reason="No integration tests on CI")
 def test_command_scheduling(modeling_api):
     api = modeling_api
 
@@ -138,7 +139,7 @@ def test_command_scheduling(modeling_api):
     assert current_commands[0].commandType == ping_command_def.commandType
     assert current_commands[1].commandType == random_fieldless_command.commandType
 
-@pytest.mark.skip(reason="This test will fail until the backend deploys field integrity verification")
+@pytest.mark.skip(reason="Bad fields not enforced yet")
 def test_bad_command(modeling_api):
     api = modeling_api
 

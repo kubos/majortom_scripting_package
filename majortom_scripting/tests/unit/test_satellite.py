@@ -10,12 +10,12 @@ from unittest.mock import Mock, ANY, create_autospec, MagicMock
 
 @pytest.fixture()
 def pass_result():
-  with open('./majortom_scripting/tests/models/passes.json', 'r') as f:
+  with open('./majortom_scripting/tests/fixtures/passes.json', 'r') as f:
     return json.loads(f.read())
 
 @pytest.fixture()
 def cmd_defs_response():
-  with open('./majortom_scripting/tests/models/command_defs_response.json', 'r') as f:
+  with open('./majortom_scripting/tests/fixtures/command_defs_response.json', 'r') as f:
     return json.loads(f.read())
 
 def test_init_makes_no_api_calls():

@@ -39,7 +39,6 @@ class CommandDefinition:
   def update_description(self, new_description):
     cp = copy.copy(self)
     cp.description = new_description
-    print(cp.to_json())
     return self.modeling_api.scripting_api.mutations.update_command_definition(self.id, cp.to_json())
 
   def update_star(self, starred):
