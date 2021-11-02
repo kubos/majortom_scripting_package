@@ -3,4 +3,4 @@
 docker build -t scripting_api .
 docker run --rm -it \
   -v $(pwd):/app \
-  scripting_api ptw --poll -- --log-level=INFO --verbose --capture=no --cache-clear
+  scripting_api ptw --poll -- --log-level=INFO --verbose --capture=no --cache-clear majortom_scripting/tests/unit majortom_scripting/tests/integration

@@ -1,9 +1,10 @@
+from requests.api import request
 import requests
 import logging
 import json
 import datetime
 from majortom_scripting.mutations import Mutations
-from majortom_scripting.exceptions import QueryError, UnknownObjectError, ScriptDisabledError, TokenInvalidError, RateLimitError
+from majortom_scripting.exceptions import ApiError, QueryError, UnknownObjectError, ScriptDisabledError, TokenInvalidError, RateLimitError
 
 logger = logging.getLogger(__name__)
 
@@ -14,8 +15,8 @@ class ScriptingAPI:
         self.token = token
         self.scheme = scheme
         self.port = port
-        self.basic_auth_username = basic_auth_username
-        self.basic_auth_password = basic_auth_password
+        self.basic_auth_username = str(basic_auth_username)
+        self.basic_auth_password = str(basic_auth_password)
         self.mutations = Mutations(self)
         self.__script_info = None
 
@@ -30,6 +31,28 @@ class ScriptingAPI:
 
     def mission_id(self):
         return self.script_info['mission']['id']
+
+    def mission(self, id, return_fields=[]):
+        """Lookup a Mission by id"""
+
+        default_fields = ['id', 'name']
+
+        graphql = """
+            query MissionQuery($id: ID!) {
+                mission(id: $id) {
+                    %s
+                }
+            }
+        """ % ', '.join(set().union(default_fields, return_fields))
+
+        request = self.query(graphql,
+                             variables={'id': id},
+                             path='data.mission')
+
+        if request is None:
+            raise UnknownObjectError(object="mission", id=id)
+
+        return request
 
     def system(self, id=None, name=None, return_fields=[]):
         """Lookup a system by id or name"""
@@ -153,6 +176,35 @@ class ScriptingAPI:
 
         return request
 
+    def command_definitions(self, systemId, return_fields=[]):
+        """ Look up all command definitions on a system"""
+
+        default_fields = ['id', 'description', 'commandType', 'displayName', 'fields', 'starred', 'tags']
+
+        graphql = """
+            query CommandsDefinitionsForSystemQuery($systemId: ID!) {
+                system(id: $systemId) {
+                    commandDefinitions {
+                        nodes {
+                            %s
+                        }
+                    }
+                }
+            }
+        """ % ', '.join(set().union(default_fields, return_fields))
+
+        request = self.query(graphql,
+                             variables={
+                                 'systemId': systemId,
+                             },
+                             path='data.system.commandDefinitions.nodes')
+
+        if request is None:
+            raise UnknownObjectError(object="system", id=systemId)
+
+        return request
+
+
     def command(self, id, return_fields=[]):
         """Lookup a command by id"""
 
@@ -199,10 +251,15 @@ class ScriptingAPI:
             }
         """ % ', '.join(set().union(default_fields, return_fields))
 
-        return self.query(graphql,
+        request = self.query(graphql,
                           variables={'systemId': system_id, 'states': states,
                                      'first': first, 'afterCursor': after_cursor},
                           path='data.system.commands')
+
+        if request is None:
+            raise UnknownObjectError(object="system", id=system_id)
+
+        return request
 
     def gateway(self, id=None, name=None, return_fields=[]):
         """Lookup a gateway by id or name"""
@@ -275,6 +332,120 @@ class ScriptingAPI:
                                      'afterCursor': after_cursor},
                           path='data.mission.events')
 
+    def satellites(self, return_fields = []):
+        default_fields = ["id","name","type","noradId","tle","enableTleAutoUpdate","lastTelemetryAt","settings","defaultGatewayId"]
+
+        graphql = """
+            query GetSystems (
+                $missionId: ID!,
+                $systemFilters: SystemFilter,
+                ) {
+                mission(id: $missionId) {
+                    id
+                    systems(filters: $systemFilters, orderBy: { sort: NAME, direction: ASC }) {
+                    edges {
+                        node {
+                            %s
+                        }
+                    }
+                    }
+                }
+            }
+        """ % ', '.join(set().union(default_fields, return_fields))
+
+        response = self.query(graphql,
+                             variables={
+                                'missionId': self.mission_id(),
+                                'systemFilters': {"type": "Satellite"}
+                             },
+                             path='data.mission.systems.edges')
+
+        if response is None:
+            raise ApiError("Unknown error")
+
+        return response
+
+    def groundstations(self, return_fields = []):
+        default_fields = ["id","name","type","latitude","longitude"]
+
+        graphql = """
+            query GetSystems (
+                $missionId: ID!,
+                $systemFilters: SystemFilter,
+                ) {
+                mission(id: $missionId) {
+                    id
+                    systems(filters: $systemFilters, orderBy: { sort: NAME, direction: ASC }) {
+                    edges {
+                        node {
+                            %s
+                        }
+                    }
+                    }
+                }
+            }
+        """ % ', '.join(set().union(default_fields, return_fields))
+
+        response = self.query(graphql,
+                             variables={
+                                'missionId': self.mission_id(),
+                                'systemFilters': {"type": "GroundStation"}
+                             },
+                             path='data.mission.systems.edges')
+
+        if response is None:
+            raise ApiError("Unknown error")
+
+        return response
+
+    def apass(self, passId):
+        graphql = """
+            query PassQuery($passId: ID!) {
+                pass(id: $passId) {
+                    id
+                    start
+                    end
+                    scheduledStatus
+                    satellite { id }
+                    groundStation { id }
+                    maxElevation
+                    nextSatPassId
+                    prevSatPassId
+                    nextGsPassId
+                    prevGsPassId
+                    nextPassId
+                    prevPassId
+                    buckets {
+                        id
+                        attachedToId
+                        attachedToType
+                        sequence {
+                            id
+                            commands {
+                                id
+                                state
+                                commandType
+                                displayName
+                                description
+                                fields
+                                commandDefinition { id }
+                                sequenceOrder
+                            }
+                        }   
+                    }
+                }
+            }
+        """
+
+        response = self.query(graphql,
+                             variables={'passId': passId},
+                             path='data.pass')
+
+        if response is None:
+            raise UnknownObjectError(object="pass", id=id)
+
+        return response
+
     def query(self, query, variables=None, operation_name=None, path=None):
         logger.debug(query)
         if self.port is None:
@@ -316,6 +487,17 @@ class ScriptingAPI:
                     json_result = json_result.get(s)
 
         return json_result
+
+    def check_user_connection(self):
+        return self.query("""
+            query Status {
+                agent {
+                    type
+                    user { name }
+                    script { name }
+                }
+            }
+        """, path='data.agent.user')
 
     def __fetch_script_info(self):
         self.__script_info = self.query("""

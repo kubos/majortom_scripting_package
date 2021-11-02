@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 
+## [1.0.0] - 2021-11-02
+### Added
+- High-level ModelingAPI that allows for much easier scheduling and commanding
+- Integration tests that run against a local instance of Major Tom
+
+### Changed
+- The signature for the `UpdateCommandDefinition` mutation has changed in a non-backwards-compatible way. If you were using this API to star/unstar commands, you will have to remove the non-nullable constraint. (i.e. instead of `$starred:Boolean!`, it's just `$starred:Boolean`, without the exclamation mark.)
 
 ## [0.1.0] - 2021-10-07
 ### Changed
