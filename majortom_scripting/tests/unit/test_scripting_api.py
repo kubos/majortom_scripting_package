@@ -27,7 +27,7 @@ class MockResponse:
 def test_disabled_script_generates_correct_error(monkeypatch):
   mock_response = MagicMock(status_code=422)
   mock_post = Mock(return_value=mock_response)
-  monkeypatch.setattr(requests, "post", mock_post)
+  monkeypatch.setattr(requests.Session, "post", mock_post)
 
   with pytest.raises(ScriptDisabledError):
     ScriptingAPI("host", "token").script_id()
@@ -46,7 +46,7 @@ def test_correct_error_generated_when_rate_limit_status_code_received(monkeypatc
     **methods
   )
   mock_post = Mock(return_value=mock_response)
-  monkeypatch.setattr(requests, "post", mock_post)
+  monkeypatch.setattr(requests.Session, "post", mock_post)
 
   with pytest.raises(RateLimitError):
     ScriptingAPI("host", "token").script_id()
@@ -54,25 +54,25 @@ def test_correct_error_generated_when_rate_limit_status_code_received(monkeypatc
 def test_correct_error_generated_when_token_invalid_status_code_received(monkeypatch):
   mock_response = MagicMock(status_code=403)
   mock_post = Mock(return_value=mock_response)
-  monkeypatch.setattr(requests, "post", mock_post)
+  monkeypatch.setattr(requests.Session, "post", mock_post)
 
   with pytest.raises(TokenInvalidError):
     ScriptingAPI("host", "token").script_id()
 
-def test_correct_error_generated_when_server_barfs(monkeypatch):
+def test_correct_error_generated_when_server_barfs_status_code(monkeypatch):
   fake_response = requests.Response()
   fake_response.status_code = 500
   mock_post = Mock(return_value=fake_response)
-  monkeypatch.setattr(requests, "post", mock_post)
+  monkeypatch.setattr(requests.Session, "post", mock_post)
 
   with pytest.raises(requests.exceptions.HTTPError):
     ScriptingAPI("host", "token").script_id()
 
-def test_correct_error_generated_when_server_barfs(monkeypatch):
+def test_correct_error_generated_when_server_barfs_error_message(monkeypatch):
   mock_response = MagicMock(status_code=200)
   mock_response.json.return_value = {"errors": ["Ya dun goofed"]}
   mock_post = Mock(return_value=mock_response)
-  monkeypatch.setattr(requests, "post", mock_post)
+  monkeypatch.setattr(requests.Session, "post", mock_post)
 
   with pytest.raises(QueryError):
     ScriptingAPI("host", "token").script_id()
