@@ -1,4 +1,3 @@
-from requests.api import request
 import requests
 import logging
 import json
@@ -19,6 +18,7 @@ class ScriptingAPI:
         self.basic_auth_password = str(basic_auth_password)
         self.mutations = Mutations(self)
         self.__script_info = None
+        self.session = requests.Session()
 
     @property
     def script_info(self):
@@ -453,16 +453,16 @@ class ScriptingAPI:
         else:
             url = f"{self.scheme}://{self.host}:{self.port}/script_api/v1/graphql"
 
-        request = requests.post(url,
-                                auth=(self.basic_auth_username, self.basic_auth_password),
-                                headers={
-                                    'X-Script-Token': self.token,
-                                },
-                                json={
-                                    'query': query,
-                                    'variables': variables,
-                                    'operationName': operation_name
-                                })
+        request = self.session.post(url,
+                                    auth=(self.basic_auth_username, self.basic_auth_password),
+                                    headers={
+                                        'X-Script-Token': self.token,
+                                    },
+                                    json={
+                                        'query': query,
+                                        'variables': variables,
+                                        'operationName': operation_name
+                                    })
 
         if request.status_code == 422:
             raise ScriptDisabledError()
