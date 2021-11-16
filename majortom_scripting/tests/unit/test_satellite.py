@@ -27,45 +27,27 @@ def test_passes_property(pass_result):
   api_mock = Mock(spec=ModelingAPI)
   inner_api_mock = create_autospec(ScriptingAPI)
   api_mock.scripting_api = inner_api_mock
-  inner_api_mock.system.return_value = pass_result
+  inner_api_mock.passes.return_value = pass_result
   
   sat = Satellite(api_mock, id=1, name="Sat E. Lite")
   passes = sat.passes
 
-  inner_api_mock.system.assert_called_once_with(id=1, return_fields=ANY)
-  assert len(passes) > 100, "There should be a bunch of pass objects in the array"
-
-  # Make sure that a second access doesn't hit the API again
-  sat.passes
-  inner_api_mock.system.assert_called_once_with(id=1, return_fields=ANY)
-
-def test_next_pass_method(pass_result):
-  api_mock = Mock(spec=ModelingAPI)
-  inner_api_mock = create_autospec(ScriptingAPI)
-  api_mock.scripting_api = inner_api_mock
-  inner_api_mock.system.return_value = pass_result
-  
-  sat = Satellite(api_mock, id=1, name="Sat E. Lite")
-  now = 1633452497914
-  next = sat.next_pass(current_unix_time_ms=now)
-
-  assert next
-  assert next.start > now
-  assert next.id == "2566"
+  inner_api_mock.passes.assert_called_once_with(system_id=1, start_time=ANY, end_time=ANY, first=ANY)
+  assert len(passes) > 50, "There should be a bunch of pass objects in the array"
 
 def test_next_pass_method_with_scheduled_passes(pass_result):
   api_mock = Mock(spec=ModelingAPI)
   inner_api_mock = create_autospec(ScriptingAPI)
   api_mock.scripting_api = inner_api_mock
-  inner_api_mock.system.return_value = pass_result
+  inner_api_mock.passes.return_value = pass_result
   
   sat = Satellite(api_mock, id=1, name="Sat E. Lite")
-  now = 1633452497914
+  now = 1637068239755
   next = sat.next_pass(current_unix_time_ms=now, scheduled=True)
 
   assert next
   assert next.start > now
-  assert next.id == "2568"
+  assert next.id == "10611"
 
 def test_next_pass_method_raises_not_found_error_when_no_more_passes_exist(pass_result):
   api_mock = Mock(spec=ModelingAPI)

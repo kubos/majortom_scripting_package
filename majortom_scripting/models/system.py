@@ -31,21 +31,22 @@ class System:
 
   @property
   def passes(self):
-    if self._passes is None:
-      self.get_passes()
+    self.get_passes(limit=10)
     return self._passes
   
-  def get_passes(self):
-    # ToDo: Returns all the passes -- we need a way to filter
-    return_fields=["id","passes{edges{node{id,satellite{id,name},groundStation{id,name},start,end,scheduledStatus,maxElevation,buckets{id,attachedToId,attachedToType,sequence{id,commands{id,displayName}}},nextSatPassId,prevSatPassId,nextGsPassId,prevGsPassId,nextPassId,prevPassId}}}"]    
-    result = self.modeling_api.scripting_api.system(id=self.id, return_fields=return_fields)
-    self._passes = [Pass(self.modeling_api, **x["node"]) for x in result["passes"]["edges"]]
-    self._passes.sort(key=lambda x: int(x.start))
-    return self.passes
+  def get_passes(self, start=None, end=None, limit=100):
+    # return_fields=['id', 'start', 'end', 'scheduledStatus', 'satellite { id }', 'groundStation { id }', 'maxElevation','nextSatPassId','prevSatPassId','nextGsPassId','prevGsPassId','nextPassId','prevPassId', 'buckets {id, attachedToId, attachedToType, sequence {id, commands {id, sequenceOrder}}}']
+    start_time = start if start else datetime.timestamp(datetime.now()) * 1000   # default to upcoming passes
+    result = self.modeling_api.scripting_api.passes(system_id=self.id, start_time=start_time, end_time=end, first=limit)
+    self._passes = [Pass(self.modeling_api, **x) for x in result["passes"]["nodes"]]
+    return self._passes
+
+  def get_upcoming_passes(self, current_unix_time_ms=None):
+    now = current_unix_time_ms if current_unix_time_ms else datetime.timestamp(datetime.now()) * 1000
+    return self.get_passes(start=now)
 
   def next_pass(self, current_unix_time_ms=None, scheduled=False):
-    now = current_unix_time_ms if current_unix_time_ms else datetime.timestamp(datetime.now()) * 1000
-    future_passes = [x for x in self.passes if x.start > now]
+    future_passes = self.get_upcoming_passes(current_unix_time_ms)
     scheduled_passes = [x for x in future_passes if x.scheduledStatus == "scheduled"] if scheduled else future_passes
     if  len(scheduled_passes) == 0:
       raise PassNotFoundError
