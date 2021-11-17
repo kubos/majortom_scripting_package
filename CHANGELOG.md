@@ -5,6 +5,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- Low-level `passes()` API, that can return passes for a satellite or groundstation and optionally between a start and end time. It also takes arguments that allow for paging of results.
+
+### Fixed
+- Fixed a bug in `next_pass()` that would fail to get the next pass if there were too many past passes. 
 
 ## [1.0.1] - 2021-11-15
 ### Changed

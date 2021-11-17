@@ -446,6 +446,56 @@ class ScriptingAPI:
 
         return response
 
+    def passes(self, system_id, start_time=None, end_time=None, first=10, after_cursor=None, return_fields=[]):
+        """Lookup passes by system_id"""
+
+        default_fields = ['id', 'start', 'end', 'scheduledStatus', 'satellite { id }', 'groundStation { id }', 
+        'maxElevation','nextSatPassId','prevSatPassId','nextGsPassId','prevGsPassId','nextPassId','prevPassId', 
+        'buckets {id, attachedToId, attachedToType, sequence {id, commands {id, sequenceOrder}}}']
+
+        graphql = """
+            query PassesQuery($systemId: ID!, $first: Int!, $start: Time, $end: Time, $afterCursor: String) {
+            system(id: $systemId) {
+                passes(
+                filters: { start: $start, end: $end }
+                orderBy: { sort: START, direction: ASC }
+                first: $first
+                after: $afterCursor
+                ) {
+                nodes {
+                    %s
+                }
+                pageInfo {
+                    hasNextPage
+                    hasPreviousPage
+                    startCursor
+                    endCursor
+                }
+                totalCount
+                }
+            }
+            }
+        """ % ', '.join(set().union(default_fields, return_fields))
+
+        variables={
+            'systemId': system_id, 
+            'start': start_time,
+            'end': end_time, 
+            'first': first,
+            'afterCursor': after_cursor
+        }
+        variables = {k:v for k,v in variables.items() if v is not None}
+
+        request = self.query(graphql,
+                          variables=variables,
+                          path='data.system')
+
+        if request is None:
+            raise UnknownObjectError(object="system", id=system_id)
+
+        return request
+
+
     def query(self, query, variables=None, operation_name=None, path=None):
         logger.debug(query)
         if self.port is None:
