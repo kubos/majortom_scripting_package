@@ -35,7 +35,6 @@ class System:
     return self._passes
   
   def get_passes(self, start=None, end=None, limit=100):
-    # return_fields=['id', 'start', 'end', 'scheduledStatus', 'satellite { id }', 'groundStation { id }', 'maxElevation','nextSatPassId','prevSatPassId','nextGsPassId','prevGsPassId','nextPassId','prevPassId', 'buckets {id, attachedToId, attachedToType, sequence {id, commands {id, sequenceOrder}}}']
     start_time = start if start else datetime.timestamp(datetime.now()) * 1000   # default to upcoming passes
     result = self.modeling_api.scripting_api.passes(system_id=self.id, start_time=start_time, end_time=end, first=limit)
     self._passes = [Pass(self.modeling_api, **x) for x in result["passes"]["nodes"]]
